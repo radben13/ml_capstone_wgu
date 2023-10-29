@@ -5,14 +5,15 @@ import os
 
 def get_session():
     if 'SNOWFLAKE_ACCOUNT' in os.environ:
-        session = Session.builder.config({        
+        session_configs = {
             'account': os.environ['SNOWFLAKE_ACCOUNT'],
             'user': os.environ['SNOWFLAKE_USER'],
             'password': os.environ['SNOWFLAKE_PASSWORD'],
             'warehouse ': os.environ['SNOWFLAKE_WAREHOUSE'],
             'database': os.environ['SNOWFLAKE_DATABASE'],
             'schema': os.environ['SNOWFLAKE_SCHEMA']
-        }).create()
+        }
+        session = Session.builder.configs(session_configs).create()
     else:
         session = Session.builder.create()
     return session
