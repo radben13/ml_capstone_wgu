@@ -5,6 +5,7 @@ import os
 
 def get_session():
     if 'SNOWFLAKE_ACCOUNT' in os.environ:
+        print('Pulling Snowflake credentials from environment')
         session_configs = {
             'account': os.environ['SNOWFLAKE_ACCOUNT'],
             'user': os.environ['SNOWFLAKE_USER'],
@@ -20,6 +21,7 @@ def get_session():
 
 def get_connection():
     if 'SNOWFLAKE_ACCOUNT' in os.environ:
+        print('Pulling Snowflake credentials from environment')
         connection = snowflake.connector.connect({        
             'account': os.environ['SNOWFLAKE_ACCOUNT'],
             'user': os.environ['SNOWFLAKE_USER'],

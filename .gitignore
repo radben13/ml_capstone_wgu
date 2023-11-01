@@ -5,3 +5,5 @@ resources/
 archive/
 
 config.py
+config/
+.streamlit/

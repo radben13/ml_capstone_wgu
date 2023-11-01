@@ -3,7 +3,10 @@ import pandas as pd
 import numpy as np
 import altair as alt
 import pydeck as pdk
+from snowflake.snowpark.functions import col
 from snowflake_connect import get_session as get_sf_session
+
+st.title('Weather Severity Prediction')
 
 def get_session():
     return get_sf_session()
@@ -16,74 +19,70 @@ def get_states():
 def get_stations():
     return get_session().table('weather_stations').to_pandas()
 
+@st.cache_resource
+def get_informed_weather_codes():
+    return get_session().table('informed_weather_codes').to_pandas()
+
+@st.cache_resource
+def get_severe_weather_data():
+    return get_session().table('cleaned_station_observations')\
+        .where((col('is_severe')))\
+        .to_pandas()
+#  & (col('had_own_weather_cond_code')))
+
 states = get_states()
 stations = get_stations()
 
-st.title('Demo Streamlit')
-a = st.text_input('Label', 0, 10, 1)
-b = st.number_input('Value', 0, 10, 2)
+map_modes = {
+    'Weather Stations': 'stations',
+    'Severe Weather': 'severe_weather',
+}
 
-def add_value():
-    st.session_state['custom_labels'] = np.array(st.session_state['custom_labels'].tolist() + [a])
-    st.session_state['custom_values'] = np.array(st.session_state['custom_values'].tolist() + [b])
-
-st.button('Add Values', on_click=add_value)
+map_mode = map_modes[st.radio('Map Mode', map_modes)]
 
 selected_state = st.selectbox('State', states['STATE_NAME'].sort_values())
-# selected_state = st.select_slider('States', state_table['STATE_NAME'].sort_values())
+state = states.set_index('STATE_NAME').to_dict(orient='index')[selected_state]
 
-selected_state = states.where(lambda r : r['STATE_NAME'] == selected_state).dropna().iloc[0]['STATE_ID']
-# st.select_slider()
-
-if 'custom_values' not in st.session_state:
-    st.session_state['custom_labels'] = np.array(['value1','value2'])
-    st.session_state['custom_values'] = np.array([1,2], dtype=np.intp)
-
-
-example_data = pd.DataFrame({
-    'Labels': st.session_state['custom_labels'],
-    'Values': st.session_state['custom_values']
-})
-
-zoom = 3 if selected_state == None else 6
-
-
-def clicked_object(widget, payload):
-    print('widget', widget)
-    print('payload', payload)
-
-state = states.where(lambda i : i['STATE_ID'] == selected_state).dropna().iloc[0]
-
-st.write(stations.columns.to_list())
+layers = []
+if map_mode == 'stations':
+    layers.append(pdk.Layer(
+        'ScatterplotLayer',
+        stations.where(lambda i : i['STATE'] == state['STATE_ID']).dropna()[['LONGITUDE', 'LATITUDE']],
+        get_position='[LONGITUDE, LATITUDE]',
+        get_color='[200, 30, 0, 160]',
+        get_radius=1000
+    ))
+elif map_mode == 'severe_weather':
+    severe_weather = get_severe_weather_data()# .where(lambda i : i['STATE'] == state['STATE_ID'])[['LONGITUDE', 'LATITUDE', 'HAD_OWN_WEATHER_COND_CODE']].dropna()
+    st.write(state)
+    st.write(severe_weather)
+    layers.append(pdk.Layer(
+        'ScatterplotLayer',
+        severe_weather,
+        get_position='[LONGITUDE, LATITUDE]',
+        get_color='[200, 30, HAD_OWN_WEATHER_COND_CODE ? 0 : 250, HAD_OWN_WEATHER_COND_CODE ? 255 : 50 / (METERS_DISTANCE / 20000)]',
+        get_radius='HAD_OWN_WEATHER_COND_CODE ? 5000 : 10000'
+    ))
 
 mapDeck = pdk.Deck(
     map_style=None,
     initial_view_state=pdk.ViewState(
-        zoom=zoom,
+        zoom=6,
         latitude=state['LATITUDE'],
         longitude=state['LONGITUDE']
     ),
-    layers=[
-        pdk.Layer(
-            'ScatterplotLayer',
-            stations.where(lambda i : i['STATE'] == selected_state).dropna()[['LONGITUDE', 'LATITUDE']],
-            get_position='[LONGITUDE, LATITUDE]',
-            get_color='[200, 30, 0, 160]',
-            get_radius=1000
-        )]
+    layers=layers
 )
-
 st.pydeck_chart(mapDeck)
-st.line_chart(example_data, x='Labels')
-# st.bar_chart(example_data, x='val')
-# st.area_chart(example_data, x='val')
 
-st.altair_chart(alt.Chart(example_data)    
-        .mark_bar()
-        .encode(
-            alt.X('Labels').axis(labelAngle=0),
-            alt.Y('Values').title(None))
-    , use_container_width=True
-)
+# st.altair_chart(alt.Chart(example_data)    
+#         .mark_bar()
+#         .encode(
+#             alt.X('Labels').axis(labelAngle=0),
+#             alt.Y('Values').title(None))
+#     , use_container_width=True
+# )
 st.subheader('Raw data')
 st.write(stations)
+
+st.write(get_informed_weather_codes())
