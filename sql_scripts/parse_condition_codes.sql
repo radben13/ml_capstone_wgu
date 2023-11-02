@@ -44,3 +44,18 @@ from parsed_codes
         on second_code.code = code_values[1]
     left join weather_condition_codes third_code
         on third_code.code = code_values[2]
+;
+
+-- Create a table that shows all of the codes seen
+create or replace transient table observed_weather_codes as
+with codes as (
+    select code_1 as code from observed_codes
+    union all
+    select code_2 from observed_codes
+    union all
+    select code_3 from observed_codes
+)
+select code, count(*) occurrences
+from codes
+group by 1
+order by 1
