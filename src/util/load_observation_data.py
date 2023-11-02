@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import threading
 from datetime import datetime
-from snowflake_connect import get_session as get_sf_session
+from util.snowflake_connect import get_session as get_sf_session
 
 def get_session():
     return get_sf_session()

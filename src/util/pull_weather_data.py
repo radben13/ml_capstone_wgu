@@ -1,8 +1,10 @@
 
-from config import *
+import os
 from datetime import datetime,timedelta
 import pandas as pd
 import requests as req
+
+WS_TOKEN = os.environ['WS_TOKEN']
 
 observation_variables = [
     'air_temp',
