@@ -32,7 +32,7 @@ Let's break these down to be more clear.
 
 Across the world, weather data providers have established weather stations to measure the environment
 around them. For much of the weather data providers, they share the data publicly as a public service.
-Many governments facilitate this weather collection through air ports or other locations.
+Many governments facilitate this weather collection through airports or other locations.
 
 Feel free to examine some weather station data for many that are found within the United States.
 
@@ -48,12 +48,12 @@ if st.session_state['2_station']:
 """
 ## Geographic Data
 
-The Geographic Data was pretty simply set up. Starting with the data about the states within the
+The Geographic Data was pretty simple to set up. Starting with the data about the states within the
 Union.
 
 The data compiled for the states was constructed by averaging the latitude and longitude of the
-stations within each state. This resulted in a fairly implementation of maps being able to navigate,
-but it didn't play a factor in the machine learning algorithm.
+stations within each state. This resulted in a fairly simple implementation of state coordinates
+for navigation on the map, but it didn't play a factor in the machine learning algorithm.
 
 """
 
