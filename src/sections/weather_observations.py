@@ -43,7 +43,7 @@ def show_classification_pie():
 
 def show_weather_condition_data():
     st.write(wo_header_1)
-    st.dataframe(get_informed_weather_codes().apply(tb_floor, axis=1))
+    st.dataframe(get_informed_weather_codes().apply(tb_floor, axis=1), use_container_width=True)
     st.write(wo_header_2)
     show_classification_pie()
 
@@ -97,6 +97,13 @@ def show_weather_observation_data():
 > _It makes sense that as severe weather approaches, the amount of saturation in
 > the air increases, lowering the dew-point temperature. This seems obvious now
 > after seeing the data. Nonetheless, I didn't expect such a strong correlation._
+""")
+    elif column == 'RELATIVE_HUMIDITY':
+        st.write("""
+> _Relative Humidity would make sense with some storms. If severe weather involves
+> any precipitation, it is likely to increase the water content of the air. However,
+> I don't know that it is required for all severe weather. A blizzard would involve the
+> air cooling, thus reducing its water retention._
 """)
     elif column == 'ELEVATION':
         st.write("""
