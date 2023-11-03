@@ -1,7 +1,7 @@
 # WGU Capstone
 by Braden Van Wagenen
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://bvanwa-capstone-wgu.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://bvanwa-wgu-capstone.streamlit.app)
 # Weather Severity Prediction
 by Braden Van Wagenen &mdash; Student ID: 001345438
 
@@ -17,4 +17,4 @@ organization with a [Weather API](https://synopticdata.com/weatherapi/) that ena
 of weather station observation data across the world. With the Open Access License, 1 year of historical
 data is available for academic institutions or hobbyists to retrieve free of charge.
 
-Feel free to navigate through this repository or [Streamlit App](https://bvanwa-capstone-wgu.streamlit.app) to observe the capstone.
+Feel free to navigate through this repository or [Streamlit App](https://bvanwa-wgu-capstone.streamlit.app) to observe the capstone.
