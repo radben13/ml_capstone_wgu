@@ -74,18 +74,18 @@ def show_weather_observation_data():
             use_container_width=True
         )
     st.write("""
-    _**My's Reactions, Musings, and Questions in response to the data...**_
+    _**My reactions, musings, and questions in response to the data...**_
     """)
     if column == 'AIR_TEMP':
         st.write("""
 > _Because the 10 days collected were within the latter half of October,
 > it isn't very surprising that air temperature would have the increased
-> presence of data in the mid 60 degrees Farenheit._
+> presence of data in the mid 60 degrees Fahrenheit._
         """)
     elif column == 'WIND_SPEED':
         st.write("""
 > _Many of the conditions that were classified as "Severe" were due to
-> the presence of wind. It's no surpise then that there would be a correlation
+> the presence of wind. It's no surprise then that there would be a correlation
 > of wind speed with this data._
 """)
     elif column == 'PRESSURE':

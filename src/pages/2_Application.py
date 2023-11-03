@@ -1,13 +1,13 @@
 
 import streamlit as st
-
-
 from PIL import Image
 from src.util.section_tools import create_section_button, init_sections
 from src.util.file_tools import get_example_script_contents, get_asset_path
 from src.util.observation_data import get_weather_training_data
 from src.util.model_training import *
 import altair as alt
+
+import json
 
 sections = {
     '2_demo': 'Application',
@@ -49,8 +49,8 @@ The process for creating this model included the following steps:
 
 ## Data Preparation
 
-The [descriptive section](/Descriptive) discusses the (c) analysis of the data. If you wish to understand
-how the data was (b) retrieved and (d) transformed for the training and analysis, _that_ is the focus of
+The [descriptive section](/Descriptive) discusses the analysis of the data. If you wish to understand
+how the data was retrieved and transformed for the training and analysis, _that_ is the focus of
 this section.
 
 ### Retrieval
@@ -140,10 +140,9 @@ then filtered down to the records that had everything required for the model.
 
 """
 
-st.dataframe(get_weather_training_data().iloc[:10], use_container_width=True)
-
 create_section_button('2_clean_query', sections)
 if st.session_state['2_clean_query']:
+    st.dataframe(get_weather_training_data().iloc[:10], use_container_width=True)
     "The following file shows the query that was used to clean the used observations:"
     st.write(get_example_script_contents('sql_scripts/cleaned_station_observations.sql'))
 
@@ -166,35 +165,57 @@ st.write(get_example_script_contents('python_snippets/training_dataset.py'))
 
 ### Model Fitting
 
-Prepared data and scripts are a way to 
+This section is dedicated to Model Quality. How do we make the Weather Severity
+Predictor "fit" the problem it's tasked to solve?
 
+The Weather Severity Predictor (this application) is built on the Random
+Forest Algorithm. It is a **_supervised_** machine learning algorithm, which
+means it is trained by "labelled" data. At the beginning, the model doesn't
+know what it's measuring, how different data points are related, or what
+its desired outcome should be. However, by providing a list of "labelled" data,
+the algorithm is able to learn patterns that it can try to replicate.
+
+When measuring the capability or "utility" of a model, we often refer to quality
+metrics to evaluate the model. There are many, but here are three that I've used
+in this project:
+
+- `accuracy`: This represents the proportion of correctly predicted classifications over the total predictions.
+- `precision`: Precision focuses on the predicted "positive" cases. It answers the question: Of all the predicted positives, how many were actually positive?
+- `recall`: Recall looks at the actual "positive" cases. It answers the question: Of all the actual positives, how many did we predict as positive?
+
+With that context, the following section focuses on training new models to outperform
+the default. Take a swing at it. See if you can make a better version.
 """
 
-if  st.session_state:
-    pass
+model_message = ''
+def train_model(*args, **kwargs):
+    global model_message
+    model_key = json.dumps(sorted(kwargs.items()))
+    if not st.session_state.get('fitting_models'):
+        st.session_state['fitting_models'] = { model_key }
+    elif model_key in st.session_state['fitting_models']:
+        model_message = 'A model with this configuration already exists.'
+        return
+    model_message = ''
+    model = get_random_forest_classifier(**kwargs)
+    stats = get_model_stats(model)
+    if 'model_stats' not in st.session_state:
+        st.session_state['model_stats'] = stats
+    else:
+        st.session_state['model_stats'] = pd.concat(
+            [st.session_state['model_stats'], stats], ignore_index=True
+        )
 
-def train_model():
-    pass
 
-if ('model_configs' not in st.session_state) or ('model_stats' not in st.session_state):
-    st.session_state['model_stats'] = []
-    st.session_state['model_configs'] = []
-
-# st.file_uploader('Train Models from JSON', on_change=)
-
-create_section_button('2_model_training', sections)
-if st.session_state['2_model_training']:
-    model_config = get_model_training_controls()
-    st.button('Train This Model', on_click=train_model)
-    model_stats = None
-    for stats in st.session_state['model_stats']:
-        if model_stats is None:
-            model_stats = stats.copy()
-        else:
-            model_stats.loc[model_stats.shape[0]] = stats.iloc[0]
+if not st.session_state['2_model_training']:
+    create_section_button('2_model_training', sections)
+else:
+    if 'model_stats' not in st.session_state:
+        train_model()
+    model_stats = st.session_state.get('model_stats')
     if model_stats is not None:
-        model_metrics = model_stats.reset_index().melt(['index'], ['accuracy', 'recall', 'precision'], 'Metric', 'Quality')
-        st.dataframe(model_metrics)
+        model_metrics = model_stats.reset_index()\
+            .melt(['index'], ['accuracy', 'recall', 'precision'], 'Metric', 'Quality')
         st.altair_chart(
             alt.Chart(model_metrics)
                 .mark_bar()
@@ -206,8 +227,27 @@ if st.session_state['2_model_training']:
                 )
             , use_container_width=True
         )
+    """
+    The chart above will update to show the quality statistics of any models you train (or "fit")
+    here.
+    """
+    model_config = get_model_training_controls()
+    def trigger_model_training():
+        train_model(**model_config)
+    st.button('Train This Model'
+        , on_click=trigger_model_training
+        , disabled=json.dumps(sorted(model_config.items())) in st.session_state['fitting_models']
+    )
+    """
+    #### Configuration Options
 
-    # with tr_col_1:
-    # with tr_col_2:
-    st.dataframe(model_config)
-    st.write(st.session_state['model_configs'])
+    The ability to configure models can involve a lot more than this tool presents, but here's a few fields you can configure.
+
+    1. `max_leaf_nodes`: Controls the maximum number of terminal nodes (leaves) in trees. Used to prevent overfitting, or adapting too closely to the training data, by limiting the tree's growth.
+    2. `min_samples_leaf`: Minimum number of samples required to be present at a leaf node. This parameter prevents very specific splits based on few data points, again preventing overfitting.
+    3. `max_depth`: Maximum depth of the tree. The deeper the tree, the more complex the decisions it can make. However, too deep can lead to overfitting.
+        - _There's a trend here. Overfitting can be a problem._
+    4. `min_samples_split`: Minimum number of samples required to split a node. Helps in ensuring that a significant number of data points are present before making a decision.
+    5. `criterion`: The function that measures the quality of a split. "gini" is for Gini impurity and "entropy" is for information gain. Both are metrics to measure how often a randomly chosen element would be incorrectly classified.
+    6. `n_estimators`: Number of trees in the forest. More trees can lead to more robust models, but also longer training times.
+    """

@@ -19,14 +19,14 @@ For maintenance of the application, this exists within a Github Repository:
 The data lives in an industry-leading data warehouse tool, Snowflake. If something were to cause the loss of access,
 to Snowflake, however, the 2 Gigabytes of data is preserved in AWS S3 as [a zip file](https://braden-personal-public.s3.amazonaws.com/wgu/observations.zip).
 
-The ability to adjust this application is also heightened by its existing on a flexible framework, Streamlit.
+The ability to adjust this application is also heightened by a flexible framework, Streamlit.
 Streamlit isn't bound to Streamlit Cloud. It can also be deployed on private servers.
 
 **Monitoring**
 
 Snowflake and the Streamlit both provide monitoring resources for their platforms.
 
-Snowflake has detailed logs of queries, storage, computation, and computation. It's an analytics database
+Snowflake has detailed logs of queries, storage, and computation. It's an analytics database
 with its own logs available to be analyzed.
 
 """
@@ -35,7 +35,7 @@ st.image(get_asset_path('snowflake_query_history.png'))
 st.image(get_asset_path('snowflake_usage.png'))
 
 """
-Snowflake's usage charts, [built in alerting and notifications](https://docs.snowflake.com/en/guides-overview-alerts),
+Snowflake's usage charts, [built-in alerting and notifications](https://docs.snowflake.com/en/guides-overview-alerts),
 and other monitoring tools make it a strong contender to stay as this application grows or
 gets more traffic.
 
