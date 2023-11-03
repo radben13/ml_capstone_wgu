@@ -28,7 +28,8 @@ top-to-bottom order for ease of consumption, but there is no requirement for goi
 """
 
 from PIL import Image
-from src.util.section_tools import get_example_script_contents, create_section_button, init_sections
+from src.util.section_tools import create_section_button, init_sections
+from src.util.file_tools import get_example_script_contents, get_asset_path
 
 sections = {
     '3_demo': 'Application',
@@ -131,7 +132,7 @@ that houses the data passed to it. Once there, it was a simple task to "write" t
 in append mode to its destination.
 """
 
-st.image(Image.open('../assets/retrieval.jpeg'))
+st.image(Image.open(get_asset_path('retrieval.jpeg')))
 
 create_section_button('3_upload', sections)
 if st.session_state['3_upload']:
