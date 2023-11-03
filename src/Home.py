@@ -67,20 +67,18 @@ of weather conditions based on a weather station's data.
 The process for creating this model included the following steps:
 
 1. Data Preparation
-    a. Discovery
-    b. Retrieval
-    c. Analysis
-    d. Transformation
+    - Retrieval
+    - Analysis
+    - Transformation
 2. Model Training
-    a. Training Data Selected
-    b. Model Fitting
-    c. Quality Review
+    - Training Data Selected
+    - Model Fitting
+    - Quality Review
 
 
 ## Data Preparation
 
-The (a) discovery of the data used in this project is found in the [Introduction section](/Introduction).
-The [Descriptive section](/Descriptive) discusses the (c) analysis of the data. If you wish to understand
+The [descriptive section](/Descriptive) discusses the (c) analysis of the data. If you wish to understand
 how the data was (b) retrieved and (d) transformed for the training and analysis, _that_ is the focus of
 this section.
 
@@ -165,5 +163,7 @@ created on top of the observations table:
 st.write(get_example_script_contents('sql_scripts/clean_observations.sql'))
 
 """
+
+There's more to be said...
 
 """
