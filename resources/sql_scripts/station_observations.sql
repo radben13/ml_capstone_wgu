@@ -1,7 +1,3 @@
-
-
-
-
 -- Create a combination table where all of the observations are available with a station at each point in time
 create or replace transient table station_observations as
 with station_observation_times as (

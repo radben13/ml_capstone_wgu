@@ -27,6 +27,7 @@ top-to-bottom order for ease of consumption, but there is no requirement for goi
 ---
 """
 
+from PIL import Image
 from src.util.section_tools import get_example_script_contents, create_section_button, init_sections
 
 sections = {
@@ -130,6 +131,8 @@ that houses the data passed to it. Once there, it was a simple task to "write" t
 in append mode to its destination.
 """
 
+st.image(Image.open('../assets/retrieval.jpeg'))
+
 create_section_button('3_upload', sections)
 if st.session_state['3_upload']:
     """
@@ -138,6 +141,7 @@ if st.session_state['3_upload']:
     the default configuration for the snowflake connection).
     """
     st.write(get_example_script_contents('python_snippets/load_observation_data.py'))
+
 
 """
 Once in Snowflake, the work to analyze and transform the data for the task of training
