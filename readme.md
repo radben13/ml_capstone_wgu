@@ -17,5 +17,4 @@ organization with a [Weather API](https://synopticdata.com/weatherapi/) that ena
 of weather station observation data across the world. With the Open Access License, 1 year of historical
 data is available for academic institutions or hobbyists to retrieve free of charge.
 
-Feel free to navigate through this repository or [Streamlit App](https://bvanwa-capstone-wgu.streamlit.app) to observe the capstone. The navigation is intentionally sorted in a
-top-to-bottom order for ease of consumption, but there is no requirement for going in order.
+Feel free to navigate through this repository or [Streamlit App](https://bvanwa-capstone-wgu.streamlit.app) to observe the capstone.
