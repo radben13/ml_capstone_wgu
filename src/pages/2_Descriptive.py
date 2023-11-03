@@ -17,7 +17,7 @@ init_sections(sections)
 """
 # Descriptive
 
-This section describes the data retrieved, and the information we can glean from its
+This section describes the data retrieved and the information we can glean from its
 exploration. There are a few categories of information analyzed and used for this capstone:
 
 - Weather Station Data
@@ -48,8 +48,8 @@ if st.session_state['2_station']:
 """
 ## Geographic Data
 
-The Geographic Data was pretty simple to set up. Starting with the data about the states within the
-Union.
+The Geographic Data was pretty simple to set up. The majority of the geographic data concerns
+the states within the United States.
 
 The data compiled for the states was constructed by averaging the latitude and longitude of the
 stations within each state. This resulted in a fairly simple implementation of state coordinates
@@ -79,6 +79,7 @@ The material measured data points used in the application include:
 - Air Pressure
 - Wind Speed
 - Dew Point Temperature
+- Elevation
 - Altimeter
 
 ### Observed Conditions

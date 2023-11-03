@@ -20,3 +20,95 @@ Feel free to navigate through this site to observe the capstone. The navigation 
 top-to-bottom order for ease of consumption, but there is no requirement for going in order.
 
 """
+
+
+
+"""
+---
+"""
+
+from src.util.section_tools import get_example_script_contents, create_section_button, init_sections
+
+sections = {
+    '3_demo': 'Application',
+    '3_sample_json': 'Sample Timeseries',
+    '3_transform_py': 'Parsing Script',
+    '3_model_training': 'Training Data',
+    '3_model_fitting': 'Fitting Details',
+
+}
+
+init_sections(sections)
+
+
+"""
+
+# Application
+
+The following is the application portion of the capstone. It demonstrates the training
+and predictive capability of the Random Forest algorithm as it relates to the classification
+of weather conditions based on a weather station's data.
+
+
+## Demonstration
+
+"""
+
+
+
+
+"""
+## Model Creation
+
+
+The process for creating this model included the following steps:
+
+1. Data Preparation
+    a. Discovery
+    b. Retrieval
+    c. Analysis
+    d. Transformation
+2. Model Training
+    a. Training Data Selected
+    b. Model Fitting
+    c. Quality Review
+
+
+## Data Preparation
+
+The (a) discovery of the data used in this project is found in the [Introduction section](/Introduction).
+The [Descriptive section](/Descriptive) discusses the (c) analysis of the data. If you wish to understand
+how the data was (b) retrieved and (d) transformed for the training and analysis, _that_ is the focus of
+this section.
+
+### Retrieval
+
+Data was retrieved from Synoptic's Weather API with a python script. After creating an
+account and generating an API token, retrieving data from the weather API was as simple
+as making a get request to their [timeseries endpoint](https://docs.synopticdata.com/services/time-series).
+From this endpoint, station and observation data could be retrieved, and it could be requested
+in large batches.
+
+"""
+
+create_section_button('3_sample_json', sections)
+if st.session_state['3_sample_json']:
+    "The following file demonstrates the original structure in which the data was retrieved:"
+    st.write(get_example_script_contents('sample_timeseries.json'))
+    
+"""
+
+### Transformation
+
+Once retrieved, the json body was parsed and traversed by a python function which would take
+the data object and return a pandas DataFrame of the select fields in a melted/unpivot pattern.
+
+For every pandas dataframe produced, a csv file was created with that panda's contents by
+using the built-in pandas function `to_csv()`.
+
+"""
+
+create_section_button('3_transform_py', sections)
+if st.session_state['3_transform_py']:
+    "The function demonstrates how the object was parsed into a pandas DataFrame:"
+    st.write(get_example_script_contents('python_snippets/transform_to_csv.py'))
