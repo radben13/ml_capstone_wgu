@@ -1,0 +1,27 @@
+[
+    {
+      "max_depth": 25,
+      "criterion": "entropy"
+    },
+    {
+      "max_depth": 8,
+      "criterion": "gini"
+    },
+    {
+      "max_depth": 43,
+      "criterion": "gini"
+    },
+    {
+      "max_depth": 43,
+      "min_samples_leaf": 6,
+      "max_leaf_nodes": 50
+    },
+    {
+      "max_depth": 43,
+      "max_leaf_nodes": 50
+    },
+    {
+      "max_depth": 43,
+      "max_leaf_nodes": 73
+    }
+]

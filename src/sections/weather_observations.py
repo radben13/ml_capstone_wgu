@@ -8,8 +8,6 @@ def tb_floor(row):
 
 wo_header_1 = """
 
-Here are the values seen:
-
 **Weather Condition Codes**
 """
 

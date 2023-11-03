@@ -1,4 +1,3 @@
-
 -- Create a new table that has only the columns that will be leveraged for the project
 create or replace transient table cleaned_station_observations as
 with cleaned_station_observations as (

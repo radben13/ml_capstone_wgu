@@ -1,5 +1,5 @@
 import streamlit as st
-from snowflake.snowpark.functions import col, iff, round as sf_round
+from snowflake.snowpark.functions import col, iff, round as sf_round, expr
 from src.util.snowflake_connect import get_session
 import pandas as pd
 
@@ -53,7 +53,7 @@ def get_weather_observation_data(column: str):
 
 @st.cache_resource
 def get_weather_training_data():
-    return get_session().table('cleaned_station_observations')\
+    data = get_session().table('cleaned_station_observations')\
         .where(col('had_own_weather_cond_code'))\
         .select(
             col('is_severe'),
@@ -65,6 +65,11 @@ def get_weather_training_data():
             col('wind_speed'),
             col('altimeter'),
             col('latitude'),
-            col('longitude')
+            col('longitude'),
+            col('date_time'),
+            col('station_id')
         )\
+        .order_by(expr('random(1)'))\
+        .drop('date_time', 'station_id')\
         .to_pandas()
+    return data
