@@ -29,7 +29,8 @@ def get_weather_classifications():
 def get_weather_observation_data(column: str):
     data = get_session().table('cleaned_station_observations')\
         .select(
-            sf_round(col(column)).alias(column)
+            # sf_round(col(column)).alias(column)
+            col(column)
             , col('had_own_weather_cond_code')
             , col('is_severe'))\
         .where(col('had_own_weather_cond_code'))\

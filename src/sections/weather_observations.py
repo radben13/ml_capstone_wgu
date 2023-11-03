@@ -68,11 +68,12 @@ def show_weather_observation_data():
     result = get_weather_observation_data(column)
     with col2:
         st.altair_chart(
-            alt.Chart(result).mark_bar().encode(
-                alt.X(f'{column}:Q').axis(title=selected_option),
+            alt.Chart(result).mark_point().encode(
+                alt.X(f'{column}:Q').axis(title=selected_option).scale(alt.Scale(domain=[result[column].min(), result[column].max()])),
                 alt.Y('SEVERE_PERCENT:Q')
                     .axis(format="%", title='Severe Weather Percent')
-            )
+            ),
+            use_container_width=True
         )
     if column == 'AIR_TEMP':
         st.write("""
@@ -115,6 +116,5 @@ def show_weather_observation_data():
 """)
     elif column == 'ALTIMETER':
         st.write("""
-> _I'm more confused looking at this data than anything. I would have expected it to
-> look more like Elevation's data, but it appears there might be a rounding issue here._
+> _I don't see a strong variety or correlation based on this value._
 """)

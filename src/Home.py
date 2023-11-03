@@ -154,7 +154,7 @@ There were four transformations that needed to occur:
 3. Pivot and join observations to their stations.
 4. Remove stations lacking the material data required for the model.
 
-Step 1 is covered in the [descriptive section](/Descriptive).
+Step 1 is covered in the [descriptive section](/Descriptive#observed-conditions).
 
 For step 2, the variable names were split into groups with different `_set` suffixes. Those needed
 to be removed for the training data to be consistent. To accomplish this, the following view was
