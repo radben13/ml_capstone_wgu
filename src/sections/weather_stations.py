@@ -22,9 +22,11 @@ For weather severity prediction, the most helpful datapoints are the following:
 
 ws_heading_2 = """
 
-The following chart shows the distribution of the stations that both provide data
-to Synoptic and provide the minimum environmental fields for a condition prediction.
-It also shows the subset of stations that report weather condition codes (by color).
+The following chart shows the distribution of weather stations across the United
+States that provide data for Synoptic's Weather API. I have further filtered them
+down to the stations that are returning the data I need for training the supervised
+model. It also shows the subset of stations that report weather condition codes
+(by color).
 
 """
 

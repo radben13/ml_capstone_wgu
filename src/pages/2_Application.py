@@ -10,13 +10,13 @@ from src.util.model_training import *
 import altair as alt
 
 sections = {
-    '3_demo': 'Application',
-    '3_sample_json': 'Sample Timeseries',
-    '3_transform_py': 'Parsing Script',
-    '3_upload': 'Snowflake Upload Script',
-    '3_clean_query': 'Cleaning Observations Query',
-    '3_model_training': 'Training Simulation',
-    '3_model_fitting': 'Fitting Details',
+    '2_demo': 'Application',
+    '2_sample_json': 'Sample Timeseries',
+    '2_transform_py': 'Parsing Script',
+    '2_upload': 'Snowflake Upload Script',
+    '2_clean_query': 'Cleaning Observations Query',
+    '2_model_training': 'Training Simulation',
+    '2_model_fitting': 'Fitting Details',
 
 }
 
@@ -32,76 +32,6 @@ and predictive capability of the Random Forest algorithm as it relates to the cl
 of weather conditions based on a weather station's data.
 
 
-## Demonstration
-
-"""
-def get_environment_variable_options():
-    return {
-        'Air Temperature': 'AIR_TEMP',
-        'Atmospheric Pressure': 'PRESSURE',
-        'Dew Point Temperature': 'DEW_POINT_TEMPERATURE',
-        'Relative Humidity': 'RELATIVE_HUMIDITY',
-        'Elevation': 'ELEVATION',
-        'Wind Speed': 'WIND_SPEED',
-        'Position': ['LATITUDE', 'LONGITUDE']
-    }
-
-def train_model():
-    global model_config
-    model = get_random_forest_classifier(**model_config)
-    if model_config not in st.session_state['model_configs']:
-        st.session_state['model_stats'].append(get_model_stats(model))
-        st.session_state['model_configs'].append(model_config)
-# _, val_X, _, val_y = get_training_data()
-# model = get_random_forest_classifier()
-# pred_y = model.predict(val_X)
-
-
-create_section_button('3_demo', sections)
-if st.session_state['3_demo']:
-    """
-    Edit the fields below to see the prediction and confidence of the Random Forest classifier.
-    """
-    demo_column_config = {
-        '_index': st.column_config.TextColumn(disabled=True, label='Keys'),
-        'Values': st.column_config.NumberColumn()
-    }
-    d_col_1, d_col_2 = st.columns([0.4,0.6])
-    _, val_X, _, val_y = get_training_data()
-    model = get_random_forest_classifier()
-    with d_col_1:
-        values = st.data_editor(val_X.head(1).transpose().rename(columns=lambda i: 'Values'), column_config=demo_column_config).transpose()
-    with d_col_2:
-        prod_cols = {'0':'Low Risk','1':'High Risk'}
-        pred_ya = model.predict_proba(values)
-        pred_ya = pd.DataFrame(pred_ya)
-        pred_ya = pred_ya.transpose().rename(lambda i : prod_cols[str(i)])
-        pred_ya = pred_ya.reset_index().rename(columns={'index': 'Prediction', 0:'Confidence'})
-
-        prediction = alt.Chart(pred_ya).mark_arc().encode(
-            alt.Theta('Confidence:Q'),
-            alt.Color('Prediction:N'),
-        )
-        pred_y = model.predict(values)
-        # prediction += alt.Chart(pred_y).mark_bar()
-        st.altair_chart(prediction, use_container_width=True)
-    
-    feature_report = get_model_stats(model).drop(columns=['accuracy','recall', 'precision'])\
-        .transpose().reset_index().rename(columns={'index': 'Feature', 0: 'Importance'})
-
-    st.altair_chart(
-        alt.Chart(feature_report)\
-            .mark_bar()\
-            .encode(
-                alt.X('Feature:N'),
-                alt.Y('Importance:Q'),
-                alt.Color('Feature:N')
-            )
-        , use_container_width=True
-    )
-
-
-"""
 ## Model Creation
 
 
@@ -133,8 +63,8 @@ in large batches.
 
 """
 
-create_section_button('3_sample_json', sections)
-if st.session_state['3_sample_json']:
+create_section_button('2_sample_json', sections)
+if st.session_state['2_sample_json']:
     "The following file demonstrates the original structure in which the data was retrieved:"
     st.write(get_example_script_contents('sample_timeseries.json'))
     
@@ -150,8 +80,8 @@ using the built-in pandas function `to_csv()`.
 
 """
 
-create_section_button('3_transform_py', sections)
-if st.session_state['3_transform_py']:
+create_section_button('2_transform_py', sections)
+if st.session_state['2_transform_py']:
     "The function demonstrates how the object was parsed into a pandas DataFrame:"
     st.write(get_example_script_contents('python_snippets/transform_to_csv.py'))
 
@@ -173,8 +103,8 @@ in append mode to its destination.
 
 st.image(Image.open(get_asset_path('retrieval.jpeg')))
 
-create_section_button('3_upload', sections)
-if st.session_state['3_upload']:
+create_section_button('2_upload', sections)
+if st.session_state['2_upload']:
     """
     Using this script, I uploaded all of the data, three files at a time, into the
     `ML_CAPSTONE.WEATHER.OBSERVATIONS` table in Snowflake (the database and schema were set in
@@ -212,8 +142,8 @@ then filtered down to the records that had everything required for the model.
 
 st.dataframe(get_weather_training_data().iloc[:10], use_container_width=True)
 
-create_section_button('3_clean_query', sections)
-if st.session_state['3_clean_query']:
+create_section_button('2_clean_query', sections)
+if st.session_state['2_clean_query']:
     "The following file shows the query that was used to clean the used observations:"
     st.write(get_example_script_contents('sql_scripts/cleaned_station_observations.sql'))
 
@@ -236,21 +166,24 @@ st.write(get_example_script_contents('python_snippets/training_dataset.py'))
 
 ### Model Fitting
 
-
+Prepared data and scripts are a way to 
 
 """
 
+if  st.session_state:
+    pass
 
-if 'model_stats' not in st.session_state:
+def train_model():
+    pass
+
+if ('model_configs' not in st.session_state) or ('model_stats' not in st.session_state):
     st.session_state['model_stats'] = []
     st.session_state['model_configs'] = []
 
 # st.file_uploader('Train Models from JSON', on_change=)
 
-create_section_button('3_model_training', sections)
-if st.session_state['3_model_training']:
-    if 'loaded_model' not in st.session_state:
-        "_Please wait as the model begins to train..._"
+create_section_button('2_model_training', sections)
+if st.session_state['2_model_training']:
     model_config = get_model_training_controls()
     st.button('Train This Model', on_click=train_model)
     model_stats = None
@@ -278,11 +211,3 @@ if st.session_state['3_model_training']:
     # with tr_col_2:
     st.dataframe(model_config)
     st.write(st.session_state['model_configs'])
-
-
-
-"""
-
-### Quality Review
-
-"""

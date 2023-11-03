@@ -73,6 +73,9 @@ def show_weather_observation_data():
             ),
             use_container_width=True
         )
+    st.write("""
+    _**My's Reactions, Musings, and Questions in response to the data...**_
+    """)
     if column == 'AIR_TEMP':
         st.write("""
 > _Because the 10 days collected were within the latter half of October,
@@ -114,5 +117,7 @@ def show_weather_observation_data():
 """)
     elif column == 'ALTIMETER':
         st.write("""
-> _I don't see a strong variety or correlation based on this value._
+> _I don't see a strong variety or correlation based on this value. After seeing that,
+> I'm concerned enough about it not being present that I'll just remove it from the
+> training datasets._
 """)
