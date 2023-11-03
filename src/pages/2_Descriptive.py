@@ -1,14 +1,18 @@
 import streamlit as st
 
 from src.sections.weather_stations import show_weather_station_data
-from src.sections.weather_observations import show_weather_observation_data
+from src.sections.weather_observations import show_weather_observation_data, show_weather_condition_data
 from src.util.geo_position import get_states
+from src.util.section_tools import create_section_button, init_sections
 
-def toggle_weather_stations():
-    if 'weather_station_init' in st.session_state:
-        st.session_state['weather_station_init'] = not st.session_state['weather_station_init']
-    else:
-        st.session_state['weather_station_init'] = True
+
+sections = {
+    '2_station': 'Weather Station Data',
+    '2_geographic': 'Geographic Data',
+    '2_conditions': 'Weather Condition Data',
+    '2_analysis': 'Data Analysis'
+}
+init_sections(sections)
 
 """
 # Descriptive
@@ -36,30 +40,75 @@ _All Weather Station Data was retrieved from Synoptic's Weather API_
 
 """
 
-if 'weather_station_init' not in st.session_state:
-    st.session_state['weather_station_init'] = False
+create_section_button('2_station', sections)
 
-if not st.session_state['weather_station_init']:
-    st.button('View Weather Station Data', on_click=toggle_weather_stations)
-else:
-    st.button('Close Weather Station Data', on_click=toggle_weather_stations)
+if st.session_state['2_station']:
     show_weather_station_data()
 
 """
 ## Geographic Data
 
 The Geographic Data was pretty simply set up. Starting with the data about the states within the
-Union, the following is their data:
+Union.
 
-"""
-
-st.dataframe(get_states(), use_container_width=True)
-
-
-"""
 The data compiled for the states was constructed by averaging the latitude and longitude of the
 stations within each state. This resulted in a fairly implementation of maps being able to navigate,
 but it didn't play a factor in the machine learning algorithm.
+
 """
 
-show_weather_observation_data()
+create_section_button('2_geographic', sections)
+
+if st.session_state['2_geographic']:
+    st.dataframe(get_states(), use_container_width=True)
+
+
+"""
+
+## Weather Observation Data
+
+The weather observation data all came from Synoptic's Weather API, and it includes some data points
+that are measured values, and other data points that are observations of the conditions of weather.
+
+### Measured Data Points
+
+The material measured data points used in the application include:
+
+- Air Temperature
+- Relative Humidity
+- Air Pressure
+- Wind Speed
+- Dew Point Temperature
+- Altimeter
+
+### Observed Conditions
+
+The observed conditions are classifications of the current weather at that station's location.
+The list of potential conditions reported can be retrieved from
+[Synoptic's Weather API documentation](https://docs.synopticdata.com/services/weather-condition-codes)
+but the values leveraged by this application are only those that were observed by stations within
+the US for the 10 days of data retrieved for this app (from October 15th to October 25th of 2023).
+
+"""
+
+
+create_section_button('2_conditions', sections)
+if st.session_state['2_conditions']:
+    show_weather_condition_data()
+
+
+"""
+## Data Analysis
+
+The correlations of the different environmental variables and their influence on the outcoming weather
+conditions are complex. Simple analysis of the data makes it hard to see any direct relationships,
+but with aggregated weather data, some relationships can start to display.
+
+Please explore the relationships of environment variables and the frequency of severe weather
+occurring with those different values.
+"""
+
+
+create_section_button('2_analysis', sections)
+if st.session_state['2_analysis']:
+    show_weather_observation_data()

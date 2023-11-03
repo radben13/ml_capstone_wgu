@@ -1,5 +1,5 @@
 import streamlit as st
-from src.util.observation_data import get_weather_classifications, get_informed_weather_codes
+from src.util.observation_data import get_weather_classifications, get_informed_weather_codes, get_weather_observation_data
 import altair as alt
 
 def tb_floor(row):
@@ -7,29 +7,6 @@ def tb_floor(row):
     return row
 
 wo_header_1 = """
-## Weather Observation Data
-
-The weather observation data all came from Synoptic's Weather API, and it includes some data points
-that are measured values, and other data points that are observations of the conditions of weather.
-
-### Measured Data Points
-
-The material measured data points used in the application include:
-
-- Air Temperature
-- Relative Humidity
-- Air Pressure
-- Wind Speed
-- Dew Point Temperature
-- Altimeter
-
-### Observed Conditions
-
-The observed conditions are classifications of the current weather at that station's location.
-The list of potential conditions reported can be retrieved from
-[Synoptic's Weather API documentation](https://docs.synopticdata.com/services/weather-condition-codes)
-but the values leveraged by this application are only those that were observed by stations within
-the US for the 10 days of data retrieved for this app (from October 15th to October 25th of 2023).
 
 Here are the values seen:
 
@@ -52,6 +29,7 @@ conditions as "severe"; this resulted in the following distribution of high risk
 to the reported weather conditions:
 """
 
+
 def show_classification_pie():
     base = alt.Chart(get_weather_classifications()).encode(
         alt.Theta("COUNT:Q").stack(True),
@@ -63,8 +41,73 @@ def show_classification_pie():
         pie + text
     , use_container_width=True)
 
-def show_weather_observation_data():
+def show_weather_condition_data():
     st.write(wo_header_1)
     st.dataframe(get_informed_weather_codes().apply(tb_floor, axis=1))
     st.write(wo_header_2)
     show_classification_pie()
+
+def get_environment_variable_options():
+    return {
+        'Air Temperature': 'AIR_TEMP',
+        'Atmospheric Pressure': 'PRESSURE',
+        'Dew Point Temperature': 'DEW_POINT_TEMPERATURE',
+        'Relative Humidity': 'RELATIVE_HUMIDITY',
+        'Elevation': 'ELEVATION',
+        'Wind Speed': 'WIND_SPEED',
+        'Altimeter': 'ALTIMETER'
+    }
+
+
+def show_weather_observation_data():
+    options = get_environment_variable_options()
+    col1, col2 = st.columns(2)
+    with col1:
+        selected_option = st.radio('Environment Variable', options)
+    column = options[selected_option]
+    result = get_weather_observation_data(column)
+    with col2:
+        st.altair_chart(
+            alt.Chart(result).mark_bar().encode(
+                alt.X(f'{column}:Q').axis(title=selected_option),
+                alt.Y('SEVERE_PERCENT:Q')
+                    .axis(format="%", title='Severe Weather Percent')
+            )
+        )
+    if column == 'AIR_TEMP':
+        st.write("""
+> _Because the 10 days collected were within the latter half of October,
+> it isn't very surprising that air temperature would have the increased
+> presence of data in the mid 60 degrees Farenheit._
+        """)
+    elif column == 'WIND_SPEED':
+        st.write("""
+> _Many of the conditions that were classified as "Severe" were due to
+> the presence of wind. It's no surpise then that there would be a correlation
+> of wind speed with this data._
+""")
+    elif column == 'PRESSURE':
+        st.write("""
+> _Until it was displayed in this graph, I didn't anticipate seeing pressure
+> so clearly indicate severe weather. This makes me suspect the machine learning
+> model will notice that as well._
+""")
+    elif column == 'DEW_POINT_TEMPERATURE':
+        st.write("""
+> _It makes sense that as severe weather approaches, the amount of saturation in
+> the air increases, lowering the dew-point temperature. This seems obvious now
+> after seeing the data. Nonetheless, I didn't expect such a strong correlation._
+""")
+    elif column == 'ELEVATION':
+        st.write("""
+> _The amount of 100% correlations with elevation and severe weather make me
+> suspicious this is more of a symptom of individual stations exclusively reporting
+> something that falls within the severe category, not that there's actually a
+> strong relationship. This is further validated by the spread of the 100% values
+> across the spectrum of elevation._
+""")
+    elif column == 'ALTIMETER':
+        st.write("""
+> _I'm more confused looking at this data than anything. I would have expected it to
+> look more like Elevation's data, but it appears there might be a rounding issue here._
+""")

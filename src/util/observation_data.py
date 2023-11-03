@@ -1,6 +1,7 @@
 import streamlit as st
-from snowflake.snowpark.functions import col, iff
+from snowflake.snowpark.functions import col, iff, round as sf_round
 from src.util.snowflake_connect import get_session
+import pandas as pd
 
 
 @st.cache_resource
@@ -21,4 +22,48 @@ def get_weather_classifications():
         .group_by(col('is_severe'))\
         .count()\
         .select(iff(col('is_severe'), 'High Risk', 'Low Risk').alias('severity'), col('count'))\
+        .to_pandas()
+
+
+@st.cache_resource
+def get_weather_observation_data(column: str):
+    data = get_session().table('cleaned_station_observations')\
+        .select(
+            sf_round(col(column)).alias(column)
+            , col('had_own_weather_cond_code')
+            , col('is_severe'))\
+        .where(col('had_own_weather_cond_code'))\
+        .to_pandas()
+    # Count where IS_SEVERE is true
+    severe_counts = data[data['IS_SEVERE']].groupby(column).size().rename('IS_SEVERE_COUNT')
+    # Total counts
+    total_counts = data.groupby(column).size().rename('TOTAL_COUNT')
+    # Combine data
+    result = pd.concat([severe_counts, total_counts], axis=1).reset_index()
+    # Calculate percentage
+    result['SEVERE_PERCENT'] = result['IS_SEVERE_COUNT'].truediv(result['TOTAL_COUNT'], fill_value=0)
+    # Clean up pandas
+    result = result.dropna().reset_index()
+    result['IS_SEVERE_COUNT'] = result['IS_SEVERE_COUNT'].astype(int)
+    result['SEVERE_PERCENT'] = result['SEVERE_PERCENT'].astype(float)
+    result[column] = result[column].astype(float)
+    return result
+
+
+@st.cache_resource
+def get_weather_training_data():
+    return get_session().table('cleaned_station_observations')\
+        .where(col('had_own_weather_cond_code'))\
+        .select(
+            col('is_severe'),
+            col('air_temp'),
+            col('pressure'),
+            col('dew_point_temperature'),
+            col('relative_humidity'),
+            col('elevation'),
+            col('wind_speed'),
+            col('altimeter'),
+            col('latitude'),
+            col('longitude')
+        )\
         .to_pandas()
