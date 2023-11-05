@@ -1,14 +1,15 @@
 
 import streamlit as st
-
-from snowflake.snowpark.functions import col, expr
+from snowflake.snowpark.functions import col, expr, random
 from src.util.snowflake_connect import get_session
 from src.util.geo_position import apply_state_filter
 
 @st.cache_resource
 def get_stations(state_id = None):
     stations = get_session().table('weather_stations')
-    return apply_state_filter(stations, state_id)
+    return apply_state_filter(stations, state_id)\
+        .order_by(random(1)).limit(100)\
+        .to_pandas()
 
 
 @st.cache_resource

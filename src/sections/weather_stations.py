@@ -3,7 +3,6 @@ import streamlit as st
 from src.util.station_data import get_mapped_stations, get_stations, get_graphed_stations
 from src.util.geo_position import get_states
 from classes.united_states import UnitedStates
-from snowflake.snowpark.functions import col, random
 import altair as alt
 import pydeck as pdk
 
@@ -83,7 +82,7 @@ def show_weather_station_data():
     # Station sample
     with tableTab:
         st.write(ws_heading_1)
-        st.dataframe(get_stations().order_by(random(1)).limit(100))
+        st.dataframe(get_stations())
     # Stations per state
     with graphTab:
         st.write(ws_heading_2)
